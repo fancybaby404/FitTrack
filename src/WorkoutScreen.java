@@ -154,6 +154,11 @@ public class WorkoutScreen extends JFrame {
             if (completedSets[0] < exercise.getSets()) {
                 completedSets[0]++;
                 setsLabel.setText(completedSets[0] + " / " + exercise.getSets());
+
+                if (completedSets[0] == exercise.getSets()) {
+                    addSetButton.setEnabled(false);
+                    addSetButton.setBackground(Color.GRAY);
+                }
             
             }
         });
@@ -187,6 +192,9 @@ public class WorkoutScreen extends JFrame {
             if (completedSets[0] > 0) {
                 completedSets[0]--;
                 setsLabel.setText(completedSets[0] + " / " + exercise.getSets());
+
+                addSetButton.setEnabled(true);
+                addSetButton.setBackground(primaryColor);
                 
             }
         });
