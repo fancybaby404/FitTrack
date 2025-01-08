@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,12 +29,12 @@ public class HomeScreen extends BaseScreen {
     private JPanel routinesPanel;
     private JPanel historyPanel;
     private JButton addRoutineButton;
-    private ArrayList<Routine> routines;
+    private ArrayList<Routine> allRoutines;
     private JLabel textUserGreeting;
 
     public HomeScreen() {
         super("Workout Tracker - Home");
-        routines = Routine.loadRoutines();
+        allRoutines = Routine.loadRoutines();
         initializeComponents();
         setupLayout();
         updateRoutinesPanel();
@@ -57,7 +58,7 @@ public class HomeScreen extends BaseScreen {
         addRoutineButton.setMargin(new Insets(10, 20, 10, 20));
         addRoutineButton.setFont(new Font("Arial", Font.BOLD, 14));
         addRoutineButton.addActionListener(e -> {
-            RoutineScreen routineScreen = new RoutineScreen(routines);
+            RoutineScreen routineScreen = new RoutineScreen(allRoutines);
             routineScreen.setVisible(true);
             routineScreen.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -102,7 +103,7 @@ public class HomeScreen extends BaseScreen {
         routinesPanel.removeAll();
         routinesPanel.add(Box.createVerticalStrut(10));
 
-        for (Routine routine : routines) {
+        for (Routine routine : allRoutines) {
             JPanel routineCard = createRoutineCard(routine);
             routinesPanel.add(routineCard);
             routinesPanel.add(Box.createVerticalStrut(10));
@@ -111,8 +112,6 @@ public class HomeScreen extends BaseScreen {
         routinesPanel.revalidate();
         routinesPanel.repaint();
     }
-
-    
 
     private JPanel createRoutineCard(Routine routine) {
         JPanel card = new JPanel(new BorderLayout(5, 5));
@@ -128,18 +127,15 @@ public class HomeScreen extends BaseScreen {
             name = name.substring(0, 17) + "...";
         }
 
-
         JLabel nameLabel = new JLabel(name);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
-        JButton deleteButton = new JButton("X");
-        deleteButton.setFont(new Font("Arial", Font.BOLD, 9));
-        deleteButton.setForeground(Color.WHITE);
-        deleteButton.setBackground(new Color(220, 53, 69)); // Red color
-        deleteButton.setPreferredSize(new Dimension(30, 30));
+        ImageIcon icon = new ImageIcon("/src/images/trash.png");
+        RoundedButton deleteButton = new RoundedButton(icon);
+        deleteButton.setPreferredSize(new Dimension(50, 50));
         deleteButton.setFocusPainted(false);
-        deleteButton.setBorder(new RoundedBorder(15, new Color(220, 53, 69)));
-        deleteButton.setVisible(true);
+        deleteButton.setFont(new Font("Arial", Font.BOLD, 15)); // Set font to bold and larger
+
 
         // Add hover effect
         deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -155,22 +151,23 @@ public class HomeScreen extends BaseScreen {
         // Add action listener with confirmation dialog
         deleteButton.addActionListener(e -> {
             int result = JOptionPane.showConfirmDialog(
-                null,
-                "Are you sure you want to delete this routine?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-            );
-            
+                    null,
+                    "Are you sure you want to delete this routine?",
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
             if (result == JOptionPane.YES_OPTION) {
-                Routine.deleteRoutine(routine.getName(), routines);
+                Routine.deleteRoutine(routine.getName(), allRoutines);
+                updateRoutinesPanel();
+                updateHistoryPanel();
                 // Add any UI refresh code here
                 // For example, if this is in a JFrame:
                 // dispose();
                 // Or if you need to refresh a list:
                 // refreshRoutineList();
             }
-            
+
         });
 
         card.add(deleteButton, BorderLayout.EAST);
@@ -185,15 +182,13 @@ public class HomeScreen extends BaseScreen {
         textPanel.add(nameLabel, BorderLayout.NORTH);
         textPanel.add(countLabel, BorderLayout.SOUTH);
 
-        
-
         card.add(textPanel, BorderLayout.CENTER);
 
         // Make the entire card clickable
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    WorkoutScreen workoutScreen = new WorkoutScreen(routine);
+                    WorkoutScreen workoutScreen = new WorkoutScreen(routine, allRoutines);
                     workoutScreen.setVisible(true);
                 }
             }
@@ -298,6 +293,40 @@ public class HomeScreen extends BaseScreen {
         @Override
         public Insets getBorderInsets(Component c) {
             return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
+        }
+    }
+
+    private class RoundedButton extends JButton {
+        public RoundedButton(ImageIcon icon) {
+            super( icon );
+            setContentAreaFilled(false);
+            setBackground(new Color(220, 53, 69));
+            setForeground(Color.WHITE);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            if (getModel().isArmed()) {
+                g.setColor(getBackground().darker());
+            } else {
+                g.setColor(getBackground());
+            }
+            g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+            super.paintComponent(g);
+        }
+
+        @Override
+        protected void paintBorder(Graphics g) {
+            g.setColor(getBackground().darker());
+            g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+        }
+
+        @Override
+        public boolean contains(int x, int y) {
+            int radius = 20;
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+            return (Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)) <= Math.pow(radius, 2);
         }
     }
 }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -30,6 +31,7 @@ import javax.swing.border.AbstractBorder;
 
 public class WorkoutScreen extends JFrame {
     private Routine routine;
+    private ArrayList<Routine> allRoutines;
     private JPanel mainPanel;
     private JPanel exercisesPanel;
     private Timer stopwatch;
@@ -40,8 +42,9 @@ public class WorkoutScreen extends JFrame {
     private Color primaryColor = new Color(70, 130, 180);
     private Color accentColor = new Color(240, 240, 240);
 
-    public WorkoutScreen(Routine routine) {
+    public WorkoutScreen(Routine routine, ArrayList<Routine> allRoutines) {
         this.routine = routine;
+        this.allRoutines = allRoutines;
         initializeComponents();
         setLocationRelativeTo(null);
     }
@@ -56,19 +59,46 @@ public class WorkoutScreen extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Header with routine name
-        JPanel headerPanel = new JPanel(new BorderLayout());
+        JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+        JPanel leftPanel = new JPanel(new BorderLayout(10, 0));
+        leftPanel.setBackground(Color.WHITE);
 
         JLabel routineNameLabel = new JLabel(routine.getName());
         routineNameLabel.setFont(new Font("Arial", Font.BOLD, 28));
         routineNameLabel.setForeground(primaryColor);
-        headerPanel.add(routineNameLabel, BorderLayout.WEST);
+        // headerPanel.add(routineNameLabel, BorderLayout.WEST);
+
+        // Edit Routine
+        JButton editRoutineButton = new JButton("Edit Routine");
+        editRoutineButton.setFont(new Font("Arial", Font.BOLD, 14));
+        editRoutineButton.setForeground(Color.WHITE);
+        editRoutineButton.setBackground(primaryColor);
+        editRoutineButton.setPreferredSize(new Dimension(120, 35));
+        editRoutineButton.setBorder(new RoundedBorder(20, primaryColor));
+        editRoutineButton.setFocusPainted(false);
+        editRoutineButton.addActionListener(e -> {
+            EditRoutineScreen editRoutineScreen = new EditRoutineScreen(routine, allRoutines);
+            editRoutineScreen.setVisible(true);
+            editRoutineScreen.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                    updateRoutineDisplay();
+                }
+            });
+        });
+
+        leftPanel.add(routineNameLabel, BorderLayout.WEST);
+        leftPanel.add(editRoutineButton, BorderLayout.EAST);
 
         // Timer display
         timerLabel = new JLabel("00:00:00");
         timerLabel.setFont(new Font("Arial", Font.BOLD, 24));
         timerLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        headerPanel.add(leftPanel, BorderLayout.WEST);
         headerPanel.add(timerLabel, BorderLayout.EAST);
 
         // Exercises panel
@@ -125,6 +155,20 @@ public class WorkoutScreen extends JFrame {
             seconds++;
             updateTimerLabel();
         });
+    }
+
+    private void updateRoutineDisplay() {
+        setTitle("Workout: " + routine.getName());
+        exercisesPanel.removeAll();
+
+        for (Exercise exercise : routine.getExercises()) {
+            JPanel exercisePanel = createExercisePanel(exercise);
+            exercisesPanel.add(exercisePanel);
+            exercisesPanel.add(Box.createVerticalStrut(10));
+        }
+
+        exercisesPanel.revalidate();
+        exercisesPanel.repaint();
     }
 
     private JPanel createExercisePanel(Exercise exercise) {
