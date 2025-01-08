@@ -1,10 +1,8 @@
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.awt.*;
-import java.io.*;
-import java.util.ArrayList;
 
 public class HomeScreen extends BaseScreen {
     private JPanel routinesPanel;
@@ -94,6 +92,8 @@ public class HomeScreen extends BaseScreen {
         routinesPanel.repaint();
     }
 
+    
+
     private JPanel createRoutineCard(Routine routine) {
         JPanel card = new JPanel(new BorderLayout(5, 5));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -108,8 +108,53 @@ public class HomeScreen extends BaseScreen {
         if (name.length() > 20) {
             name = name.substring(0, 17) + "...";
         }
+
+
         JLabel nameLabel = new JLabel(name);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+
+        JButton deleteButton = new JButton("X");
+        deleteButton.setFont(new Font("Arial", Font.BOLD, 9));
+        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setBackground(new Color(220, 53, 69)); // Red color
+        deleteButton.setPreferredSize(new Dimension(30, 30));
+        deleteButton.setFocusPainted(false);
+        deleteButton.setBorder(new RoundedBorder(15, new Color(220, 53, 69)));
+        deleteButton.setVisible(true);
+
+        // Add hover effect
+        deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                deleteButton.setBackground(new Color(200, 35, 51)); // Darker red
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                deleteButton.setBackground(new Color(220, 53, 69));
+            }
+        });
+
+        // Add action listener with confirmation dialog
+        deleteButton.addActionListener(e -> {
+            int result = JOptionPane.showConfirmDialog(
+                null,
+                "Are you sure you want to delete this routine?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+            
+            if (result == JOptionPane.YES_OPTION) {
+                Routine.deleteRoutine(routine.getName(), routines);
+                // Add any UI refresh code here
+                // For example, if this is in a JFrame:
+                // dispose();
+                // Or if you need to refresh a list:
+                // refreshRoutineList();
+            }
+            
+        });
+
+        card.add(deleteButton, BorderLayout.EAST);
 
         // Exercise count
         JLabel countLabel = new JLabel(routine.getExercises().size() + " exercises");
@@ -120,6 +165,8 @@ public class HomeScreen extends BaseScreen {
         textPanel.setOpaque(false);
         textPanel.add(nameLabel, BorderLayout.NORTH);
         textPanel.add(countLabel, BorderLayout.SOUTH);
+
+        
 
         card.add(textPanel, BorderLayout.CENTER);
 
@@ -148,7 +195,7 @@ public class HomeScreen extends BaseScreen {
         historyPanel.removeAll();
         historyPanel.add(Box.createVerticalStrut(10));
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("./config/workout_history.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\workout_history.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 JPanel historyEntry = createHistoryEntry(line);
