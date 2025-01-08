@@ -148,7 +148,7 @@ public class HomeScreen extends BaseScreen {
         historyPanel.removeAll();
         historyPanel.add(Box.createVerticalStrut(10));
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("workout_history.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("./config/workout_history.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 JPanel historyEntry = createHistoryEntry(line);
