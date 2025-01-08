@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -112,14 +111,14 @@ public class WorkoutScreen extends JFrame {
                 new RoundedBorder(10, new Color(220, 220, 220)),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-
+    
         // Left side - Exercise name and details
         JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
         infoPanel.setOpaque(false);
-
+    
         JLabel nameLabel = new JLabel(exercise.getName());
         nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-
+    
         JLabel detailsLabel = new JLabel(String.format(
                 "%.1f kg × %d reps × %d sets",
                 exercise.getWeight(),
@@ -127,20 +126,103 @@ public class WorkoutScreen extends JFrame {
                 exercise.getSets()));
         detailsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         detailsLabel.setForeground(Color.GRAY);
-
+    
         infoPanel.add(nameLabel);
         infoPanel.add(detailsLabel);
-
-        // Right side - Sets counter
-        JPanel setsPanel = new JPanel(new BorderLayout());
-        setsPanel.setOpaque(false);
-        JLabel setsLabel = new JLabel(exercise.getCompletedSets() + " / " + exercise.getSets());
+    
+        // Right side - Sets counter and + button
+        JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        controlsPanel.setOpaque(false);
+    
+        // Counter variable to track completed sets
+        final int[] completedSets = {0};
+    
+        // Sets counter
+        JLabel setsLabel = new JLabel("0 / " + exercise.getSets());
         setsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        setsPanel.add(setsLabel, BorderLayout.EAST);
+    
+        // + button for set completion
+        JButton addSetButton = new JButton("+");
+        addSetButton.setFont(new Font("Arial", Font.BOLD, 20));
+        addSetButton.setForeground(Color.WHITE);
+        addSetButton.setBackground(primaryColor);
+        addSetButton.setPreferredSize(new Dimension(40, 40));
+        addSetButton.setFocusPainted(false);
+        addSetButton.setBorder(new RoundedBorder(20, primaryColor));
+        
+        addSetButton.addActionListener(e -> {
+            if (completedSets[0] < exercise.getSets()) {
+                completedSets[0]++;
+                setsLabel.setText(completedSets[0] + " / " + exercise.getSets());
 
+                if (completedSets[0] == exercise.getSets()) {
+                    addSetButton.setEnabled(false);
+                    addSetButton.setBackground(Color.GRAY);
+                }
+            
+            }
+        });
+    
+        // Add hover effect
+        addSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (addSetButton.isEnabled()) {
+                    addSetButton.setBackground(primaryColor.darker());
+                }
+            }
+    
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (addSetButton.isEnabled()) {
+                    addSetButton.setBackground(primaryColor);
+                }
+            }
+        });
+        
+
+        // - button
+        JButton minusSetButton = new JButton("-");
+        minusSetButton.setFont(new Font("Arial", Font.BOLD, 20));
+        minusSetButton.setForeground(Color.WHITE);
+        minusSetButton.setBackground(primaryColor);
+        minusSetButton.setPreferredSize(new Dimension(40, 40));
+        minusSetButton.setFocusPainted(false);
+        minusSetButton.setBorder(new RoundedBorder(20, primaryColor));
+        
+        minusSetButton.addActionListener(e -> {
+            if (completedSets[0] > 0) {
+                completedSets[0]--;
+                setsLabel.setText(completedSets[0] + " / " + exercise.getSets());
+
+                addSetButton.setEnabled(true);
+                addSetButton.setBackground(primaryColor);
+                
+            }
+        });
+    
+        // Add hover effect
+        minusSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (minusSetButton.isEnabled()) {
+                    minusSetButton.setBackground(primaryColor.darker());
+                }
+            }
+    
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (minusSetButton.isEnabled()) {
+                    minusSetButton.setBackground(primaryColor);
+                }
+            }
+        });
+    
+        // Add components to controls panel
+        controlsPanel.add(setsLabel);
+        controlsPanel.add(addSetButton);
+        controlsPanel.add(minusSetButton);
+    
+        // Add panels to main panel
         panel.add(infoPanel, BorderLayout.CENTER);
-        panel.add(setsPanel, BorderLayout.EAST);
-
+        panel.add(controlsPanel, BorderLayout.EAST);
+    
         return panel;
     }
 

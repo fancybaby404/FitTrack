@@ -4,7 +4,7 @@ public class Exercise   {
     private double weight;
     private int reps;
     private int sets;
-    private int completedSets;
+    private int completedSets = 0;
 
     public Exercise(String name, double weight, int reps, int sets) {
         this.name = name;
@@ -33,6 +33,10 @@ public class Exercise   {
 
     public int getCompletedSets() {
         return completedSets;
+    }
+
+    public void setCompletedSets(int completedSets) {
+        this.completedSets = completedSets;
     }
 
     public void incrementCompletedSets() {
