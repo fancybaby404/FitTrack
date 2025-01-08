@@ -1,3 +1,5 @@
+import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -69,6 +71,9 @@ public class HomeScreen extends BaseScreen {
                 new JScrollPane(routinesPanel),
                 new JScrollPane(historyPanel));
         splitPane.setResizeWeight(0.5);
+        splitPane.setEnabled(false); // non resizable
+
+        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
