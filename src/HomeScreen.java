@@ -1,8 +1,7 @@
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class HomeScreen extends BaseScreen {
     private JPanel routinesPanel;
@@ -57,6 +56,7 @@ public class HomeScreen extends BaseScreen {
                 routinesPanel,
                 historyPanel);
         splitPane.setResizeWeight(0.5);
+        splitPane.setEnabled(false); // non resizable
 
         topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
