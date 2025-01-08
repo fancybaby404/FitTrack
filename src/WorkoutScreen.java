@@ -36,7 +36,7 @@ public class WorkoutScreen extends JFrame {
     private int seconds = 0;
     private JButton startFinishButton;
     private JLabel timerLabel;
-    private static final String HISTORY_FILE = "workout_history.txt";
+    private static final String HISTORY_FILE = "./config/workout_history.txt";
     private Color primaryColor = new Color(70, 130, 180);
     private Color accentColor = new Color(240, 240, 240);
 

@@ -15,7 +15,7 @@ public class Routine {
     private ArrayList<Exercise> exercises;
     private LocalDateTime date;
     private boolean isCompleted;
-    private static final String ROUTINES_FILE = "C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\routines.txt";
+    private static final String ROUTINES_FILE = "./config/routines.txt";
 
     public Routine(String name) {
         this.name = name;
@@ -136,11 +136,10 @@ public class Routine {
     public static void deleteRoutine(String routineName, ArrayList<Routine> routines) {
         // Remove the routine from the ArrayList
         routines.removeIf(routine -> routine.getName().equals(routineName));
-        
+
         // Save the updated list to file
         saveRoutines(routines);
-        
+
     }
 
-    
 }

@@ -1,0 +1,24 @@
+# Ignore class files
+*.class
+
+# Ignore specific files in /src/config/
+src/config/routines.txt
+src/config/workout_history.txt
+
+# Ignore other common files and directories for Java projects
+*.log
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+target/
+build/
+out/
+bin/
+.gradle/
+.idea/
+.project
+.classpath
+.settings/
