@@ -1,10 +1,27 @@
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.io.*;
-import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.EmptyBorder;
 
 public class HomeScreen extends BaseScreen {
     private JPanel routinesPanel;
@@ -97,9 +114,8 @@ public class HomeScreen extends BaseScreen {
     private JPanel createRoutineCard(Routine routine) {
         JPanel card = new JPanel(new BorderLayout(5, 5));
         card.setBorder(BorderFactory.createCompoundBorder(
-            new RoundedBorder(8, new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        ));
+                new RoundedBorder(8, new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         card.setBackground(new Color(250, 250, 250));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
@@ -167,9 +183,8 @@ public class HomeScreen extends BaseScreen {
         JPanel entry = new JPanel();
         entry.setLayout(new BoxLayout(entry, BoxLayout.Y_AXIS));
         entry.setBorder(BorderFactory.createCompoundBorder(
-            new RoundedBorder(8, new Color(220, 220, 220)),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
+                new RoundedBorder(8, new Color(220, 220, 220)),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         entry.setBackground(new Color(252, 252, 252));
         entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 

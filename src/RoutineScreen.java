@@ -1,16 +1,33 @@
-import java.awt.*;
-import java.awt.event.ActionListener;
-
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.EmptyBorder;
 
 public class RoutineScreen extends JFrame {
     private Routine routine;
     private ArrayList<Routine> allRoutines;
     private JPanel mainPanel;
-    private JPanel exercisesPanel;
-    private JTextField routineNameField;
     private JPanel exerciseListPanel;
+    private JTextField routineNameField;
 
     public RoutineScreen(ArrayList<Routine> allRoutines) {
         this.allRoutines = allRoutines;
@@ -23,53 +40,68 @@ public class RoutineScreen extends JFrame {
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        // Main panel with padding
         mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        mainPanel.setBackground(new Color(245, 245, 245));
 
         // Routine name panel
         JPanel namePanel = new JPanel(new BorderLayout());
+        namePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        namePanel.setBackground(Color.WHITE);
+        namePanel.setBorder(new RoundedBorder(10, new Color(200, 200, 200)));
+
+        JLabel nameLabel = new JLabel("Routine Name:");
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
         routineNameField = new JTextField(routine.getName());
-        routineNameField.setFont(new Font("Arial", Font.BOLD, 16));
-        routineNameField.addActionListener(e -> {
-            routine.setName(routineNameField.getText());
-            setTitle("Routine: " + routine.getName());
-        });
-        namePanel.add(new JLabel("Routine Name: "), BorderLayout.WEST);
+        routineNameField.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        namePanel.add(nameLabel, BorderLayout.WEST);
         namePanel.add(routineNameField, BorderLayout.CENTER);
 
-        // Exercises panel
-        exercisesPanel = new JPanel(new BorderLayout());
+        // Exercise list panel
         exerciseListPanel = new JPanel();
         exerciseListPanel.setLayout(new BoxLayout(exerciseListPanel, BoxLayout.Y_AXIS));
-        JScrollPane scrollPane = new JScrollPane(exerciseListPanel);
+        exerciseListPanel.setBackground(new Color(245, 245, 245));
 
-        // Add Exercise button
+        JScrollPane scrollPane = new JScrollPane(exerciseListPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(new Color(245, 245, 245));
+
+        // Add exercise button
         JButton addExerciseButton = new JButton("Add Exercise");
+        styleButton(addExerciseButton);
         addExerciseButton.addActionListener(e -> addNewExercisePanel());
 
-        // Save button panel
-        JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel addButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        addButtonPanel.setBackground(new Color(245, 245, 245));
+        addButtonPanel.add(addExerciseButton);
+
+        // Save button
         JButton saveButton = new JButton("Save Routine");
-        saveButton.setPreferredSize(new Dimension(120, 40));
+        styleButton(saveButton);
         saveButton.addActionListener(e -> saveRoutine());
-        savePanel.add(saveButton);
 
-        // Arrange panels
-        exercisesPanel.add(scrollPane, BorderLayout.CENTER);
-        exercisesPanel.add(addExerciseButton, BorderLayout.NORTH);
+        JPanel saveButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        saveButtonPanel.setBackground(new Color(245, 245, 245));
+        saveButtonPanel.add(saveButton);
 
+        // Add components to main panel
         mainPanel.add(namePanel, BorderLayout.NORTH);
-        mainPanel.add(exercisesPanel, BorderLayout.CENTER);
-        mainPanel.add(savePanel, BorderLayout.SOUTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(addButtonPanel, BorderLayout.WEST);
+        mainPanel.add(saveButtonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
     }
 
     private void addNewExercisePanel() {
         JPanel exercisePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        exercisePanel.setBorder(BorderFactory.createEtchedBorder());
+        exercisePanel.setBackground(Color.WHITE);
+        exercisePanel.setBorder(new RoundedBorder(10, new Color(200, 200, 200)));
 
-        JTextField nameField = new JTextField(15);
+        JTextField nameField = new JTextField(12);
         JTextField weightField = new JTextField(5);
         JTextField repsField = new JTextField(5);
         JTextField setsField = new JTextField(5);
@@ -84,7 +116,7 @@ public class RoutineScreen extends JFrame {
         exercisePanel.add(setsField);
 
         JButton removeButton = new JButton("×");
-        removeButton.setFont(new Font("Arial", Font.BOLD, 16));
+        styleButton(removeButton);
         removeButton.addActionListener(e -> {
             exerciseListPanel.remove(exercisePanel);
             exerciseListPanel.revalidate();
@@ -92,28 +124,7 @@ public class RoutineScreen extends JFrame {
         });
         exercisePanel.add(removeButton);
 
-        ActionListener addExerciseAction = e -> {
-            try {
-                Exercise exercise = new Exercise(
-                    nameField.getText(),
-                    Double.parseDouble(weightField.getText()),
-                    Integer.parseInt(repsField.getText()),
-                    Integer.parseInt(setsField.getText())
-                );
-                routine.addExercise(exercise);
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Please enter valid numbers for weight, reps, and sets.",
-                    "Input Error",
-                    JOptionPane.ERROR_MESSAGE);
-            }
-        };
-
-        nameField.addActionListener(addExerciseAction);
-        weightField.addActionListener(addExerciseAction);
-        repsField.addActionListener(addExerciseAction);
-        setsField.addActionListener(addExerciseAction);
-
+        exerciseListPanel.add(Box.createVerticalStrut(10));
         exerciseListPanel.add(exercisePanel);
         exerciseListPanel.revalidate();
         exerciseListPanel.repaint();
@@ -129,8 +140,74 @@ public class RoutineScreen extends JFrame {
         }
 
         routine.setName(routineNameField.getText().trim());
-        allRoutines.add(routine);
+        routine.getExercises().clear();
+
+        for (Component component : exerciseListPanel.getComponents()) {
+            if (component instanceof JPanel exercisePanel) {
+                JTextField nameField = (JTextField) exercisePanel.getComponent(1);
+                JTextField weightField = (JTextField) exercisePanel.getComponent(3);
+                JTextField repsField = (JTextField) exercisePanel.getComponent(5);
+                JTextField setsField = (JTextField) exercisePanel.getComponent(7);
+
+                try {
+                    Exercise exercise = new Exercise(
+                        nameField.getText(),
+                        Double.parseDouble(weightField.getText()),
+                        Integer.parseInt(repsField.getText()),
+                        Integer.parseInt(setsField.getText())
+                    );
+                    routine.addExercise(exercise);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        "Please enter valid numbers for weight, reps, and sets.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+        if (!allRoutines.contains(routine)) {
+            allRoutines.add(routine);
+        }
         Routine.saveRoutines(allRoutines);
+        JOptionPane.showMessageDialog(this, "Routine saved successfully!", "Save Successful", JOptionPane.INFORMATION_MESSAGE);
         dispose();
+    }
+
+    private void styleButton(JButton button) {
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(new Color(70, 130, 180));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+            new RoundedBorder(10, new Color(70, 130, 180)),
+            BorderFactory.createEmptyBorder(5, 15, 5, 15)
+        ));
+    }
+
+    // Custom RoundedBorder class for reusable borders
+    private static class RoundedBorder extends AbstractBorder {
+        private int radius;
+        private Color color;
+
+        public RoundedBorder(int radius, Color color) {
+            this.radius = radius;
+            this.color = color;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(color);
+            g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+            g2.dispose();
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(radius, radius, radius, radius);
+        }
     }
 }

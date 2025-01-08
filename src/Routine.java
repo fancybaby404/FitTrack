@@ -25,7 +25,7 @@ public class Routine {
     }
 
     // setters
-    public void setName (String name) {
+    public void setName(String name) {
         this.name = name;
     }
 

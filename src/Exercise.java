@@ -1,5 +1,5 @@
 
-public class Exercise   {
+public class Exercise {
     private String name;
     private double weight;
     private int reps;

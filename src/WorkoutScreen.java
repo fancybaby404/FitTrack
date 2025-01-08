@@ -1,9 +1,32 @@
-import java.awt.*;
-import java.io.*;
-import java.time.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.swing.*;
-import javax.swing.border.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.border.AbstractBorder;
 
 public class WorkoutScreen extends JFrame {
     private Routine routine;
@@ -111,14 +134,14 @@ public class WorkoutScreen extends JFrame {
                 new RoundedBorder(10, new Color(220, 220, 220)),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-    
+
         // Left side - Exercise name and details
         JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
         infoPanel.setOpaque(false);
-    
+
         JLabel nameLabel = new JLabel(exercise.getName());
         nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-    
+
         JLabel detailsLabel = new JLabel(String.format(
                 "%.1f kg × %d reps × %d sets",
                 exercise.getWeight(),
@@ -126,21 +149,21 @@ public class WorkoutScreen extends JFrame {
                 exercise.getSets()));
         detailsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         detailsLabel.setForeground(Color.GRAY);
-    
+
         infoPanel.add(nameLabel);
         infoPanel.add(detailsLabel);
-    
+
         // Right side - Sets counter and + button
         JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         controlsPanel.setOpaque(false);
-    
+
         // Counter variable to track completed sets
-        final int[] completedSets = {0};
-    
+        final int[] completedSets = { 0 };
+
         // Sets counter
         JLabel setsLabel = new JLabel("0 / " + exercise.getSets());
         setsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-    
+
         // + button for set completion
         JButton addSetButton = new JButton("+");
         addSetButton.setFont(new Font("Arial", Font.BOLD, 20));
@@ -149,7 +172,7 @@ public class WorkoutScreen extends JFrame {
         addSetButton.setPreferredSize(new Dimension(40, 40));
         addSetButton.setFocusPainted(false);
         addSetButton.setBorder(new RoundedBorder(20, primaryColor));
-        
+
         addSetButton.addActionListener(e -> {
             if (completedSets[0] < exercise.getSets()) {
                 completedSets[0]++;
@@ -159,10 +182,10 @@ public class WorkoutScreen extends JFrame {
                     addSetButton.setEnabled(false);
                     addSetButton.setBackground(Color.GRAY);
                 }
-            
+
             }
         });
-    
+
         // Add hover effect
         addSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -170,14 +193,13 @@ public class WorkoutScreen extends JFrame {
                     addSetButton.setBackground(primaryColor.darker());
                 }
             }
-    
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (addSetButton.isEnabled()) {
                     addSetButton.setBackground(primaryColor);
                 }
             }
         });
-        
 
         // - button
         JButton minusSetButton = new JButton("-");
@@ -187,7 +209,7 @@ public class WorkoutScreen extends JFrame {
         minusSetButton.setPreferredSize(new Dimension(40, 40));
         minusSetButton.setFocusPainted(false);
         minusSetButton.setBorder(new RoundedBorder(20, primaryColor));
-        
+
         minusSetButton.addActionListener(e -> {
             if (completedSets[0] > 0) {
                 completedSets[0]--;
@@ -195,10 +217,10 @@ public class WorkoutScreen extends JFrame {
 
                 addSetButton.setEnabled(true);
                 addSetButton.setBackground(primaryColor);
-                
+
             }
         });
-    
+
         // Add hover effect
         minusSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -206,23 +228,23 @@ public class WorkoutScreen extends JFrame {
                     minusSetButton.setBackground(primaryColor.darker());
                 }
             }
-    
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (minusSetButton.isEnabled()) {
                     minusSetButton.setBackground(primaryColor);
                 }
             }
         });
-    
+
         // Add components to controls panel
         controlsPanel.add(setsLabel);
         controlsPanel.add(addSetButton);
         controlsPanel.add(minusSetButton);
-    
+
         // Add panels to main panel
         panel.add(infoPanel, BorderLayout.CENTER);
         panel.add(controlsPanel, BorderLayout.EAST);
-    
+
         return panel;
     }
 
