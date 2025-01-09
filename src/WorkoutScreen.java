@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.AbstractBorder;
 
@@ -39,6 +43,10 @@ public class WorkoutScreen extends JFrame {
     private JButton startFinishButton;
     private JLabel timerLabel;
     private static final String HISTORY_FILE = "./config/workout_history.txt";
+    private static final Color PRIMARY_COLOR = new Color(70, 130, 180);
+    private static final Color ACCENT_COLOR = new Color(240, 240, 240);
+    private static final Color SECONDARY_COLOR = new Color(100, 100, 100);
+
     private Color primaryColor = new Color(70, 130, 180);
     private Color accentColor = new Color(240, 240, 240);
 
@@ -222,11 +230,17 @@ public class WorkoutScreen extends JFrame {
                 completedSets[0]++;
                 setsLabel.setText(completedSets[0] + " / " + exercise.getSets());
 
+                // Play sound and show rest timer
+                playSetCompletionSound();
+                SwingUtilities.invokeLater(() -> {
+                    RestTimerDialog restTimer = new RestTimerDialog(WorkoutScreen.this);
+                    restTimer.setVisible(true);
+                });
+
                 if (completedSets[0] == exercise.getSets()) {
                     addSetButton.setEnabled(false);
                     addSetButton.setBackground(Color.GRAY);
                 }
-
             }
         });
 
@@ -258,10 +272,8 @@ public class WorkoutScreen extends JFrame {
             if (completedSets[0] > 0) {
                 completedSets[0]--;
                 setsLabel.setText(completedSets[0] + " / " + exercise.getSets());
-
                 addSetButton.setEnabled(true);
-                addSetButton.setBackground(primaryColor);
-
+                addSetButton.setBackground(PRIMARY_COLOR);
             }
         });
 
@@ -296,6 +308,7 @@ public class WorkoutScreen extends JFrame {
         if (startFinishButton.getText().equals("Start Workout")) {
             stopwatch.start();
             startFinishButton.setText("Finish Workout");
+            
         } else {
             stopwatch.stop();
             logWorkout();
@@ -351,6 +364,18 @@ public class WorkoutScreen extends JFrame {
         @Override
         public Insets getBorderInsets(Component c) {
             return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
+        }
+    }
+
+    private void playSetCompletionSound() {
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+                    getClass().getResource("/src/sounds/ping.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

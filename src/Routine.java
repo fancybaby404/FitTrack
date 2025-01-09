@@ -19,7 +19,7 @@ public class Routine {
 
     public Routine(String name) {
         this.name = name;
-        this.exercises = new ArrayList();
+        this.exercises = new ArrayList<>();
         this.isCompleted = false;
     }
 
