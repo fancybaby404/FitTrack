@@ -1,3 +1,1 @@
-Workout: Sigma | Date: 2025-01-08 20:54:02 | Duration: 00:00:04 | Exercises: 
-Date: 2025-01-08 22:37:20 | Workout: New Routine | Duration: 00:00:00 | Exercises: 1
-Date: 2025-01-08 22:49:40 | Workout: New Routine | Duration: 00:00:00 | Exercises: 1
+Workout: Exercise |Date:  2025-01-09 23:40:58 | Duration: 00:00:00 | Exercises: 1

@@ -15,7 +15,7 @@ public class Routine {
     private ArrayList<Exercise> exercises;
     private LocalDateTime date;
     private boolean isCompleted;
-    private static final String ROUTINES_FILE = "./config/routines.txt";
+    private static final String ROUTINES_FILE = "C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\routines.txt";
 
     public Routine(String name) {
         this.name = name;

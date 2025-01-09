@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,9 +37,10 @@ public class WorkoutScreen extends JFrame {
     private int seconds = 0;
     private JButton startFinishButton;
     private JLabel timerLabel;
-    private static final String HISTORY_FILE = "./config/workout_history.txt";
+    private static final String HISTORY_FILE = "C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\workout_history.txt";
     private Color primaryColor = new Color(70, 130, 180);
     private Color accentColor = new Color(240, 240, 240);
+
 
     public WorkoutScreen(Routine routine, ArrayList<Routine> allRoutines) {
         this.routine = routine;
@@ -300,9 +300,9 @@ public class WorkoutScreen extends JFrame {
             stopwatch.stop();
             logWorkout();
             dispose();
-        }
+       }
     }
-
+    
     private void updateTimerLabel() {
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;
@@ -316,11 +316,12 @@ public class WorkoutScreen extends JFrame {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             writer.println(String.format(
-                    "Date: %s | Workout: %s | Duration: %s | Exercises: %d",
-                    now.format(formatter),
+                    "Workout: %s |Date:  %s | Duration: %s | Exercises: %d",
                     routine.getName(),
+                    now.format(formatter),
                     timerLabel.getText(),
                     routine.getExercises().size()));
+                    
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
