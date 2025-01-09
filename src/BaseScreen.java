@@ -15,7 +15,7 @@ abstract class BaseScreen extends JFrame {
 
         // window properties
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(600, 600);
+        this.setSize(800, 800);
 
         // main panel
         this.mainPanel = new JPanel();

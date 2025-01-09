@@ -1,31 +1,19 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.io.*;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.EmptyBorder;
-
 public class HomeScreen extends BaseScreen {
+    private static final Color PRIMARY_COLOR = new Color(70, 130, 180);
+    private static final Color PRIMARY_DARK = new Color(60, 120, 170);
+    private static final Color DANGER_COLOR = new Color(220, 53, 69);
+    private static final Color DANGER_DARK = new Color(200, 35, 51);
+    private static final Color BACKGROUND_COLOR = new Color(245, 245, 250);
+    private static final Color CARD_COLOR = new Color(255, 255, 255);
+    private static final Color TEXT_SECONDARY = new Color(100, 100, 100);
+    
     private JPanel routinesPanel;
     private JPanel historyPanel;
     private JButton addRoutineButton;
@@ -43,62 +31,221 @@ public class HomeScreen extends BaseScreen {
 
     @Override
     void initializeComponents() {
-        // Routines Panel
-        routinesPanel = new JPanel();
-        routinesPanel.setLayout(new BoxLayout(routinesPanel, BoxLayout.Y_AXIS));
-        JScrollPane routinesScroll = new JScrollPane(routinesPanel);
+        // Set main panel background
+        mainPanel.setBackground(BACKGROUND_COLOR);
+        
+        // Initialize panels with custom backgrounds
+        routinesPanel = createScrollablePanel();
+        historyPanel = createScrollablePanel();
+        
+        // Create stylish Add Routine button
+        addRoutineButton = createStyledButton("Add Routine", PRIMARY_COLOR);
+        
+        // Create modern greeting label
+        textUserGreeting = new JLabel("<html><div style='font-family: Arial; font-size: 24px; margin: 10px;'>" +
+                                    "Welcome back, <span style='color: " + String.format("#%02x%02x%02x", 
+                                    PRIMARY_COLOR.getRed(), PRIMARY_COLOR.getGreen(), PRIMARY_COLOR.getBlue()) + 
+                                    "'>User</span>!</div></html>");
+    }
 
-        // History Panel
-        historyPanel = new JPanel();
-        historyPanel.setLayout(new BoxLayout(historyPanel, BoxLayout.Y_AXIS));
-        JScrollPane historyScroll = new JScrollPane(historyPanel);
+    private JPanel createScrollablePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(BACKGROUND_COLOR);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        return panel;
+    }
 
-        // Add Routine Button
-        addRoutineButton = new JButton("Add Routine");
-        addRoutineButton.setMargin(new Insets(10, 20, 10, 20));
-        addRoutineButton.setFont(new Font("Arial", Font.BOLD, 14));
-        addRoutineButton.addActionListener(e -> {
+    private JButton createStyledButton(String text, Color baseColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(baseColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(new RoundedBorder(10, baseColor));
+        button.setPreferredSize(new Dimension(150, 40));
+        
+        // Add hover effect
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(PRIMARY_DARK);
+            }
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(PRIMARY_COLOR);
+            }
+        });
+        
+        button.addActionListener(e -> {
             RoutineScreen routineScreen = new RoutineScreen(allRoutines);
             routineScreen.setVisible(true);
-            routineScreen.addWindowListener(new java.awt.event.WindowAdapter() {
+            routineScreen.addWindowListener(new WindowAdapter() {
                 @Override
-                public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                public void windowClosed(WindowEvent e) {
                     updateRoutinesPanel();
                 }
             });
         });
-
-        // User Greeting
-        textUserGreeting = new JLabel("<html><font size='+2'>Hi, <font color='red'>user</font>!</font></html>");
-        textUserGreeting.setBorder(null);
-        textUserGreeting.setOpaque(false);
+        
+        return button;
     }
 
     @Override
     void setupLayout() {
-        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setLayout(new BorderLayout(15, 15));
 
-        // Top Panel
-        JPanel topPanel = new JPanel(new BorderLayout());
+        // Top panel with gradient background
+        JPanel topPanel = new JPanel(new BorderLayout(15, 0)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                GradientPaint gradient = new GradientPaint(0, 0, CARD_COLOR, getWidth(), 0, new Color(240, 240, 245));
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        topPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        topPanel.add(textUserGreeting, BorderLayout.WEST);
         topPanel.add(addRoutineButton, BorderLayout.EAST);
-        topPanel.add(textUserGreeting, BorderLayout.CENTER);
-        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Split Pane
-        JSplitPane splitPane = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT,
-                new JScrollPane(routinesPanel),
-                new JScrollPane(historyPanel));
+        // Create split pane with custom divider
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                createScrollPane(routinesPanel, "My Routines"),
+                createScrollPane(historyPanel, "Workout History"));
         splitPane.setResizeWeight(0.5);
-        splitPane.setEnabled(false); // non resizable
-
-        topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        splitPane.setDividerSize(1);
+        splitPane.setBorder(null);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(splitPane, BorderLayout.CENTER);
     }
 
+    private JScrollPane createScrollPane(JPanel panel, String title) {
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.setBackground(BACKGROUND_COLOR);
+        
+        // Add title
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 15, 10, 0));
+        containerPanel.add(titleLabel, BorderLayout.NORTH);
+        containerPanel.add(panel, BorderLayout.CENTER);
+        
+        JScrollPane scrollPane = new JScrollPane(containerPanel);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(BACKGROUND_COLOR);
+        return scrollPane;
+    }
+
+    private JPanel createRoutineCard(Routine routine) {
+        JPanel card = new JPanel(new BorderLayout(10, 5));
+        card.setBackground(CARD_COLOR);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                new RoundedBorder(12, new Color(230, 230, 235)),
+                BorderFactory.createEmptyBorder(15, 20, 15, 20)));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
+
+        // Create name label with ellipsis
+        String name = routine.getName();
+        if (name.length() > 20) {
+            name = name.substring(0, 17) + "...";
+        }
+        JLabel nameLabel = new JLabel(name);
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Load and scale trash icon
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/images/trash.png"));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        
+        // Create delete button
+        JButton deleteButton = new RoundedIconButton(scaledIcon);
+        deleteButton.addActionListener(e -> handleDeleteRoutine(routine));
+
+        // Create exercise count with icon
+        JLabel countLabel = new JLabel(routine.getExercises().size() + " exercises");
+        countLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+        countLabel.setForeground(TEXT_SECONDARY);
+
+        // Layout components
+        JPanel textPanel = new JPanel(new BorderLayout(5, 5));
+        textPanel.setBackground(CARD_COLOR);
+        textPanel.add(nameLabel, BorderLayout.NORTH);
+        textPanel.add(countLabel, BorderLayout.SOUTH);
+
+        card.add(textPanel, BorderLayout.CENTER);
+        card.add(deleteButton, BorderLayout.EAST);
+
+        // Add hover effect
+        card.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    new WorkoutScreen(routine, allRoutines).setVisible(true);
+                }
+            }
+            public void mouseEntered(MouseEvent e) {
+                card.setBackground(new Color(250, 250, 255));
+            }
+            public void mouseExited(MouseEvent e) {
+                card.setBackground(CARD_COLOR);
+            }
+        });
+
+        return card;
+    }
+
+    private void handleDeleteRoutine(Routine routine) {
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete '" + routine.getName() + "'?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            Routine.deleteRoutine(routine.getName(), allRoutines);
+            updateRoutinesPanel();
+            updateHistoryPanel();
+        }
+    }
+
+    // Custom components
+    private static class RoundedIconButton extends JButton {
+        public RoundedIconButton(Icon icon) {
+            super(icon);
+            setContentAreaFilled(false);
+            setBackground(DANGER_COLOR);
+            setText(null);
+            setPreferredSize(new Dimension(50, 100));
+            setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            addMouseListener(new MouseAdapter() {
+                public void mouseEntered(MouseEvent e) {
+                    setBackground(DANGER_DARK);
+                }
+                public void mouseExited(MouseEvent e) {
+                    setBackground(DANGER_COLOR);
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            if (getModel().isPressed()) {
+                g2d.setColor(getBackground().darker());
+            } else {
+                g2d.setColor(getBackground());
+            }
+            
+            g2d.fillOval(0, 0, getWidth() - 1, getHeight() - 1);
+            super.paintComponent(g2d);
+            g2d.dispose();
+        }
+    }
     private void updateRoutinesPanel() {
         routinesPanel.removeAll();
         routinesPanel.add(Box.createVerticalStrut(10));
@@ -112,99 +259,6 @@ public class HomeScreen extends BaseScreen {
         routinesPanel.revalidate();
         routinesPanel.repaint();
     }
-
-    private JPanel createRoutineCard(Routine routine) {
-        JPanel card = new JPanel(new BorderLayout(5, 5));
-        card.setBorder(BorderFactory.createCompoundBorder(
-                new RoundedBorder(8, new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
-        card.setBackground(new Color(250, 250, 250));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-
-        // Routine name with ellipsis if too long
-        String name = routine.getName();
-        if (name.length() > 20) {
-            name = name.substring(0, 17) + "...";
-        }
-
-        JLabel nameLabel = new JLabel(name);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-
-        ImageIcon icon = new ImageIcon("/src/images/trash.png");
-        RoundedButton deleteButton = new RoundedButton(icon);
-        deleteButton.setPreferredSize(new Dimension(50, 50));
-        deleteButton.setFocusPainted(false);
-        deleteButton.setFont(new Font("Arial", Font.BOLD, 15)); // Set font to bold and larger
-
-
-        // Add hover effect
-        deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                deleteButton.setBackground(new Color(200, 35, 51)); // Darker red
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                deleteButton.setBackground(new Color(220, 53, 69));
-            }
-        });
-
-        // Add action listener with confirmation dialog
-        deleteButton.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(
-                    null,
-                    "Are you sure you want to delete this routine?",
-                    "Confirm Delete",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-
-            if (result == JOptionPane.YES_OPTION) {
-                Routine.deleteRoutine(routine.getName(), allRoutines);
-                updateRoutinesPanel();
-                updateHistoryPanel();
-                // Add any UI refresh code here
-                // For example, if this is in a JFrame:
-                // dispose();
-                // Or if you need to refresh a list:
-                // refreshRoutineList();
-            }
-
-        });
-
-        card.add(deleteButton, BorderLayout.EAST);
-
-        // Exercise count
-        JLabel countLabel = new JLabel(routine.getExercises().size() + " exercises");
-        countLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        countLabel.setForeground(Color.GRAY);
-
-        JPanel textPanel = new JPanel(new BorderLayout());
-        textPanel.setOpaque(false);
-        textPanel.add(nameLabel, BorderLayout.NORTH);
-        textPanel.add(countLabel, BorderLayout.SOUTH);
-
-        card.add(textPanel, BorderLayout.CENTER);
-
-        // Make the entire card clickable
-        card.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (evt.getClickCount() == 2) {
-                    WorkoutScreen workoutScreen = new WorkoutScreen(routine, allRoutines);
-                    workoutScreen.setVisible(true);
-                }
-            }
-
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                card.setBackground(new Color(240, 240, 240));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                card.setBackground(new Color(250, 250, 250));
-            }
-        });
-
-        return card;
-    }
-
     private void updateHistoryPanel() {
         historyPanel.removeAll();
         historyPanel.add(Box.createVerticalStrut(10));
@@ -223,7 +277,6 @@ public class HomeScreen extends BaseScreen {
         historyPanel.revalidate();
         historyPanel.repaint();
     }
-
     private JPanel createHistoryEntry(String line) {
         JPanel entry = new JPanel();
         entry.setLayout(new BoxLayout(entry, BoxLayout.Y_AXIS));
@@ -270,63 +323,28 @@ public class HomeScreen extends BaseScreen {
 
         return entry;
     }
+ // Custom rounded border class
+ public static class RoundedBorder extends AbstractBorder {
+    private int radius;
+    private Color color;
 
-    // Custom rounded border class
-    public static class RoundedBorder extends AbstractBorder {
-        private int radius;
-        private Color color;
-
-        RoundedBorder(int radius, Color color) {
-            this.radius = radius;
-            this.color = color;
-        }
-
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(color);
-            g2d.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-            g2d.dispose();
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
-        }
+    RoundedBorder(int radius, Color color) {
+        this.radius = radius;
+        this.color = color;
     }
 
-    private class RoundedButton extends JButton {
-        public RoundedButton(ImageIcon icon) {
-            super( icon );
-            setContentAreaFilled(false);
-            setBackground(new Color(220, 53, 69));
-            setForeground(Color.WHITE);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            if (getModel().isArmed()) {
-                g.setColor(getBackground().darker());
-            } else {
-                g.setColor(getBackground());
-            }
-            g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-            super.paintComponent(g);
-        }
-
-        @Override
-        protected void paintBorder(Graphics g) {
-            g.setColor(getBackground().darker());
-            g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
-        }
-
-        @Override
-        public boolean contains(int x, int y) {
-            int radius = 20;
-            int centerX = getWidth() / 2;
-            int centerY = getHeight() / 2;
-            return (Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)) <= Math.pow(radius, 2);
-        }
+    @Override
+    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(color);
+        g2d.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+        g2d.dispose();
     }
+
+    @Override
+    public Insets getBorderInsets(Component c) {
+        return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
+    }
+}
 }
