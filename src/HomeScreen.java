@@ -1,9 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
 import java.io.*;
 import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.border.*;
 
 public class HomeScreen extends BaseScreen {
     private static final Color PRIMARY_COLOR = new Color(70, 130, 180);
@@ -19,6 +19,7 @@ public class HomeScreen extends BaseScreen {
     private JButton addRoutineButton;
     private ArrayList<Routine> allRoutines;
     private JLabel textUserGreeting;
+    private JButton clearHistoryButton;
 
     public HomeScreen() {
         super("Workout Tracker - Home");
@@ -37,6 +38,11 @@ public class HomeScreen extends BaseScreen {
         // Initialize panels with custom backgrounds
         routinesPanel = createScrollablePanel();
         historyPanel = createScrollablePanel();
+        
+
+        clearHistoryButton = createStyledButton("Clear History", DANGER_COLOR);  // Use a danger color to indicate caution
+        clearHistoryButton.addActionListener(e -> clearHistory());
+
         
         // Create stylish Add Routine button
         addRoutineButton = createStyledButton("Add Routine", PRIMARY_COLOR);
@@ -117,10 +123,25 @@ public class HomeScreen extends BaseScreen {
         splitPane.setDividerSize(1);
         splitPane.setBorder(null);
 
+        mainPanel.add(clearHistoryButton, BorderLayout.SOUTH);
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(splitPane, BorderLayout.CENTER);
     }
 
+    private void clearHistory() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\workout_history.txt"))) {
+            // This will effectively overwrite the file with nothing, clearing the contents
+            writer.print("");  // Writing an empty string to clear the content
+            JOptionPane.showMessageDialog(this, "Workout history has been cleared.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            updateHistoryPanel();  // Refresh the history panel after clearing the data
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error clearing history: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    
+    
     private JScrollPane createScrollPane(JPanel panel, String title) {
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setBackground(BACKGROUND_COLOR);
@@ -263,7 +284,7 @@ public class HomeScreen extends BaseScreen {
         historyPanel.removeAll();
         historyPanel.add(Box.createVerticalStrut(10));
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("./config/workout_history.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\workout_history.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 JPanel historyEntry = createHistoryEntry(line);
