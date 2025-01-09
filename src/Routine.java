@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +16,10 @@ public class Routine {
     private ArrayList<Exercise> exercises;
     private LocalDateTime date;
     private boolean isCompleted;
-    private static final String ROUTINES_FILE = "C:\\Users\\Aaron\\Documents\\GitHub\\FitTrack\\src\\config\\routines.txt";
+    private static final Path ROUTINES_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config", "routines.txt");
+    private static final String ROUTINES_FILE = ROUTINES_FILE_PATH.toString();
+;
+
 
     public Routine(String name) {
         this.name = name;

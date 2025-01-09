@@ -12,6 +12,8 @@ import java.awt.RenderingHints;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,20 +44,26 @@ public class WorkoutScreen extends JFrame {
     private int seconds = 0;
     private JButton startFinishButton;
     private JLabel timerLabel;
-    private static final String HISTORY_FILE = "./config/workout_history.txt";
+    private HomeScreen homeScreen;
+
+    private static final Path HISTORY_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config",
+            "workout_history.txt");
+    private static final String HISTORY_FILE = HISTORY_FILE_PATH.toString();
+
     private static final Color PRIMARY_COLOR = new Color(70, 130, 180);
-    private static final Color ACCENT_COLOR = new Color(240, 240, 240);
-    private static final Color SECONDARY_COLOR = new Color(100, 100, 100);
 
     private Color primaryColor = new Color(70, 130, 180);
     private Color accentColor = new Color(240, 240, 240);
-
 
     public WorkoutScreen(Routine routine, ArrayList<Routine> allRoutines) {
         this.routine = routine;
         this.allRoutines = allRoutines;
         initializeComponents();
         setLocationRelativeTo(null);
+    }
+
+    public void setHomeScreen(HomeScreen homeScreen) {
+        this.homeScreen = homeScreen;
     }
 
     private void initializeComponents() {
@@ -309,14 +317,16 @@ public class WorkoutScreen extends JFrame {
         if (startFinishButton.getText().equals("Start Workout")) {
             stopwatch.start();
             startFinishButton.setText("Finish Workout");
-            
         } else {
             stopwatch.stop();
             logWorkout();
+            if (homeScreen != null) {
+                homeScreen.updateHistoryPanel();
+            }
             dispose();
-       }
+        }
     }
-    
+
     private void updateTimerLabel() {
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;
@@ -335,7 +345,7 @@ public class WorkoutScreen extends JFrame {
                     now.format(formatter),
                     timerLabel.getText(),
                     routine.getExercises().size()));
-                    
+
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
