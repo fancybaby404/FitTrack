@@ -19,6 +19,7 @@ public class HomeScreen extends BaseScreen {
     private static final Color BACKGROUND_COLOR = new Color(245, 245, 250);
     private static final Color CARD_COLOR = new Color(255, 255, 255);
     private static final Color TEXT_SECONDARY = new Color(100, 100, 100);
+    private static final Color HISTORYHOVER = new Color(142, 22, 22);
 
     private JPanel routinesPanel;
     private JPanel historyPanel;
@@ -45,7 +46,7 @@ public class HomeScreen extends BaseScreen {
         routinesPanel = createScrollablePanel();
         historyPanel = createScrollablePanel();
 
-        clearHistoryButton = createStyledButton("Clear History", DANGER_COLOR); // Use a danger color to indicate
+        clearHistoryButton = clearHistory("Clear History", DANGER_COLOR); // Use a danger color to indicate
                                                                                 // caution
         clearHistoryButton.addActionListener(e -> clearHistory());
 
@@ -66,6 +67,29 @@ public class HomeScreen extends BaseScreen {
         panel.setBackground(BACKGROUND_COLOR);
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         return panel;
+    }
+    //Separate method for the history button changing color on hover hihihi
+    private JButton clearHistory(String text, Color baseColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(baseColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(new RoundedBorder(10, baseColor));
+        button.setPreferredSize(new Dimension(150, 40));
+
+
+        button.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(HISTORYHOVER);
+            }
+
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(DANGER_COLOR);
+            }
+        });
+
+        return button;
     }
 
     private JButton createStyledButton(String text, Color baseColor) {
