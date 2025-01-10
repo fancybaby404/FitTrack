@@ -18,23 +18,17 @@ public class AppPaths {
     private AppPaths() {
         // Initialize base paths
         baseDir = System.getProperty("user.dir");
-        // Remove 'src' from baseDir if we're running from src directory
-        String actualBaseDir = baseDir.endsWith("src") ? 
-            baseDir.substring(0, baseDir.length() - 4) : baseDir;
-            
-        configDir = actualBaseDir + File.separator + "config";
-        workoutHistoryFile = configDir + File.separator + "workout_history.txt";
-        routinesFile = configDir + File.separator + "routines.txt";
-        
-        // Set correct paths for resources
-        soundsDir = actualBaseDir + File.separator + "src" + File.separator + "sounds";
-        pingSound = soundsDir + File.separator + "ping.wav";
-        bellSound = soundsDir + File.separator + "bell.wav";
-        
-        imagesDir = actualBaseDir + File.separator + "src" + File.separator + "images";
-        playImage = imagesDir + File.separator + "play.png";
-        pauseImage = imagesDir + File.separator + "pause.png";
-        trashImage = imagesDir + File.separator + "trash.png";
+        configDir = baseDir + "/config";
+        soundsDir = baseDir + "/sounds";
+        imagesDir = baseDir + "/images";
+
+        workoutHistoryFile = configDir + "/workout_history.txt";
+        routinesFile = configDir + "/routines.txt";
+        pingSound = soundsDir + "/ping.wav";
+        bellSound = soundsDir + "/bell.wav";
+        playImage = imagesDir + "/play.png";
+        pauseImage = imagesDir + "/pause.png";
+        trashImage = imagesDir + "/trash.png";
         
         // Ensure config directory and files exist
         createRequiredPaths();
@@ -104,34 +98,48 @@ public class AppPaths {
         }
     }
     
-    // Debug method to print all paths
-    public void printAllPaths() {
-        System.out.println("Base Directory: " + baseDir);
-        System.out.println("Config Directory: " + configDir);
-        System.out.println("Workout History File: " + workoutHistoryFile);
-        System.out.println("Routines File: " + routinesFile);
-        System.out.println("Sounds Directory: " + soundsDir);
-        System.out.println("Images Directory: " + imagesDir);
-        System.out.println("Play Image: " + playImage);
-        System.out.println("Pause Image: " + pauseImage);
-        System.out.println("Trash Image: " + trashImage);
+    public String getWorkoutHistoryPath() {
+        return workoutHistoryFile;
+    }
+
+    public String getRoutinesPath() {
+        return routinesFile;
     }
     
-    // All the getter methods remain the same
-    public String getWorkoutHistoryPath() { return workoutHistoryFile; }
-    public String getRoutinesPath() { return routinesFile; }
-    public String getConfigDir() { return configDir; }
-    public String getBaseDir() { return baseDir; }
-    public String getPingSound() { return pingSound; }
-    public String getBellSound() { return bellSound; }
-    public String getPlayImage() { return playImage; }
-    public String getPauseImage() { return pauseImage; }
-    public String getTrashImage() { return trashImage; }
+    public String getConfigDir() {
+        return configDir;
+    }
     
+    public String getBaseDir() {
+        return baseDir;
+    }
+    
+    public String getPingSound() {
+        return pingSound;
+    }
+    
+    public String getBellSound() {
+        return bellSound;
+    }
+    
+    public String getPlayImage() {
+        return playImage;
+    }
+    
+    public String getPauseImage() {
+        return pauseImage;
+    }
+    
+    public String getTrashImage() {
+        return trashImage;
+    }
+    
+    // Helper method to check if a sound file exists
     public boolean soundExists(String soundPath) {
         return new File(soundPath).exists();
     }
     
+    // Helper method to check if an image file exists
     public boolean imageExists(String imagePath) {
         return new File(imagePath).exists();
     }
