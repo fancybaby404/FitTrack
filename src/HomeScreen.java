@@ -8,9 +8,10 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 public class HomeScreen extends BaseScreen {
-    private static final Path WORKOUT_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config",
-            "workout_history.txt");
-    private static final String WORKOUT_FILE = WORKOUT_FILE_PATH.toString();
+    // private static final Path WORKOUT_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config",
+    //         "workout_history.txt");
+    // private static final String WORKOUT_FILE = WORKOUT_FILE_PATH.toString();
+    private static final String WORKOUT_FILE = AppPaths.getInstance().getWorkoutHistoryPath();
 
     private static final Color PRIMARY_COLOR = new Color(70, 130, 180);
     private static final Color PRIMARY_DARK = new Color(60, 120, 170);
@@ -214,7 +215,7 @@ public class HomeScreen extends BaseScreen {
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
         // Load and scale trash icon
-        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/images/trash.png"));
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource(AppPaths.getInstance().getTrashImage()));
         Image scaledImage = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
 

@@ -154,8 +154,8 @@ class RestTimerDialog extends JDialog {
     private void loadIcons() {
         try {
             // Using absolute file paths
-            File playFile = new File("D:\\dev\\java-projects\\workout\\src\\images\\play.png");
-            File pauseFile = new File("D:\\dev\\java-projects\\workout\\src\\images\\pause.png");
+            File playFile = new File(AppPaths.getInstance().getPlayImage());
+            File pauseFile = new File(AppPaths.getInstance().getPauseImage());
 
             if (!playFile.exists() || !pauseFile.exists()) {
                 System.err.println("Could not find icon files. Using text fallback.");
@@ -211,7 +211,7 @@ class RestTimerDialog extends JDialog {
     private void playCompletionSound() {
         try {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-                    getClass().getResource("/src/sounds/bell.wav"));
+                    getClass().getResource(AppPaths.getInstance().getBellSound()));
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
             clip.start();

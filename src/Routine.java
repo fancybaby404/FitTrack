@@ -10,8 +10,9 @@ public class Routine {
     private ArrayList<Exercise> exercises;
     private LocalDateTime date;
     private boolean isCompleted;
-    private static final Path ROUTINES_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config", "routines.txt");
-    private static final String ROUTINES_FILE = ROUTINES_FILE_PATH.toString();
+    // private static final Path ROUTINES_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config", "routines.txt");
+    // private static final String ROUTINES_FILE = ROUTINES_FILE_PATH.toString();
+    private static final String ROUTINES_FILE = AppPaths.getInstance().getRoutinesPath();
 ;
 
 
