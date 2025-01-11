@@ -46,8 +46,9 @@ public class WorkoutScreen extends JFrame {
     private JLabel timerLabel;
     private HomeScreen homeScreen;
 
-    // private static final Path HISTORY_FILE_PATH = Paths.get(System.getProperty("user.dir"), "config",
-    //         "workout_history.txt");
+    // private static final Path HISTORY_FILE_PATH =
+    // Paths.get(System.getProperty("user.dir"), "config",
+    // "workout_history.txt");
     // private static final String HISTORY_FILE = HISTORY_FILE_PATH.toString();
     private static final String HISTORY_FILE = AppPaths.getInstance().getWorkoutHistoryPath();
     private static final Color PRIMARY_COLOR = new Color(70, 130, 180);
