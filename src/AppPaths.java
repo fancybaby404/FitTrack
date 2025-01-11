@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class AppPaths {
@@ -17,24 +19,24 @@ public class AppPaths {
     private final String trashImage;
     
     private AppPaths() {
-        // Since we're already in the src directory, use current directory as base
-        baseDir = Paths.get("").toAbsolutePath().toString();
+         // Find the src directory regardless of working directory
+         baseDir = findSrcDirectory();
         
-        // Set up paths directly in the current directory
-        configDir = Paths.get(baseDir, "config").toString();
-        soundsDir = Paths.get(baseDir, "sounds").toString();
-        imagesDir = Paths.get(baseDir, "images").toString();
-
-        workoutHistoryFile = Paths.get(configDir, "workout_history.txt").toString();
-        routinesFile = Paths.get(configDir, "routines.txt").toString();
-        pingSound = Paths.get(soundsDir, "ping.wav").toString();
-        bellSound = Paths.get(soundsDir, "bell.wav").toString();
-        playImage = Paths.get(imagesDir, "play.png").toString();
-        pauseImage = Paths.get(imagesDir, "pause.png").toString();
-        trashImage = Paths.get(imagesDir, "trash.png").toString();
-        
-        // Ensure directories exist
-        createRequiredPaths();
+         // Set up paths relative to the src directory
+         configDir = Paths.get(baseDir, "config").toString();
+         soundsDir = Paths.get(baseDir, "sounds").toString();
+         imagesDir = Paths.get(baseDir, "images").toString();
+ 
+         workoutHistoryFile = Paths.get(configDir, "workout_history.txt").toString();
+         routinesFile = Paths.get(configDir, "routines.txt").toString();
+         pingSound = Paths.get(soundsDir, "ping.wav").toString();
+         bellSound = Paths.get(soundsDir, "bell.wav").toString();
+         playImage = Paths.get(imagesDir, "play.png").toString();
+         pauseImage = Paths.get(imagesDir, "pause.png").toString();
+         trashImage = Paths.get(imagesDir, "trash.png").toString();
+         
+         // Ensure directories exist
+         createRequiredPaths();
     }
     
     public static AppPaths getInstance() {
@@ -77,14 +79,56 @@ public class AppPaths {
             file.createNewFile();
         }
     }
-    
+    private String findSrcDirectory() {
+        // Start with the current working directory
+        Path currentPath = Paths.get("").toAbsolutePath();
+        
+        // First check if we're already in the src directory
+        if (isSrcDirectory(currentPath)) {
+            return currentPath.toString();
+        }
+        
+        // Check if src is a direct child of current directory
+        Path srcPath = currentPath.resolve("src");
+        if (isSrcDirectory(srcPath)) {
+            return srcPath.toString();
+        }
+        
+        // If we're in a subdirectory of src, traverse up until we find it
+        Path parent = currentPath;
+        while (parent != null) {
+            if (isSrcDirectory(parent)) {
+                return parent.toString();
+            }
+            parent = parent.getParent();
+            if (parent != null) {
+                srcPath = parent.resolve("src");
+                if (isSrcDirectory(srcPath)) {
+                    return srcPath.toString();
+                }
+            }
+        }
+        
+        // If we couldn't find the src directory, throw an exception
+        throw new RuntimeException("Could not locate src directory. Current working directory: " + currentPath);
+    }
     private void checkFile(String path, String filename) {
         File file = new File(path);
         if (!file.exists()) {
             System.err.println("Warning: File " + filename + " not found at: " + path);
         }
     }
-    
+     private boolean isSrcDirectory(Path path) {
+        if (!path.toFile().exists()) {
+            return false;
+        }
+        
+        // Verify this is the correct src directory by checking for some known files/directories
+        return Files.exists(path.resolve("config")) &&
+               Files.exists(path.resolve("config/routines.txt")) &&
+               Files.exists(path.resolve("Main.java")) &&
+               Files.exists(path.resolve("AppPaths.java"));
+    }
     public String getWorkoutHistoryPath() {
         return workoutHistoryFile;
     }
