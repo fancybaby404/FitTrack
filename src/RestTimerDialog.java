@@ -25,6 +25,7 @@ class RestTimerDialog extends JDialog {
         loadIcons();
         this.remainingSeconds = DEFAULT_REST_TIME;
         initializeComponents();
+        isTimerRunning = true;
         startTimer();
         setLocationRelativeTo(parent);
     }
@@ -109,24 +110,31 @@ class RestTimerDialog extends JDialog {
 
         add(mainPanel);
     }
+    // private void toggleTimer() {
+    //     if (isTimerRunning) {
+    //         // Pause the timer
+    //         timer.stop();
+    //         playPauseButton.setIcon(playIcon);
+    //     } else {
+    //         // Resume the timer
+    //         timer.start();
+    //         playPauseButton.setIcon(pauseIcon);
+    //     }
+    //     isTimerRunning = !isTimerRunning; // Toggle the state
+    // }
 
     private void toggleTimer() {
-        isTimerRunning = !isTimerRunning;
+        // isTimerRunning = !isTimerRunning;
         if (isTimerRunning) {
-            if (pauseIcon != null) {
-                playPauseButton.setIcon(pauseIcon);
-            } else {
-                playPauseButton.setText("Pause");
-            }
-            timer.start();
-        } else {
-            if (playIcon != null) {
                 playPauseButton.setIcon(playIcon);
-            } else {
-                playPauseButton.setText("Play");
-            }
+                // playPauseButton.setText("Pause");
             timer.stop();
+        } else {
+                playPauseButton.setIcon(pauseIcon);
+                // playPauseButton.setText("Play");
+            timer.start();
         }
+        isTimerRunning = !isTimerRunning;
     }
 
     private JButton createControlButton(String text) {
@@ -194,10 +202,6 @@ class RestTimerDialog extends JDialog {
             }
         });
         timer.start();
-    }
-
-    private void togglePausePlay() {
-        isPaused = !isPaused;
     }
 
     private void adjustTime(int seconds) {
