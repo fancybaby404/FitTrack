@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -46,7 +47,10 @@ public class WorkoutScreen extends JFrame {
     private JButton startFinishButton;
     private JLabel timerLabel;
     private HomeScreen homeScreen;
-
+    private boolean workoutStarted = false;
+    private List<JButton> addSetButtons = new ArrayList<>();
+    private List<JButton> minusSetButtons = new ArrayList<>();
+    private static final Color DISABLED_COLOR = new Color(200, 200, 200);
     // private static final Path HISTORY_FILE_PATH =
     // Paths.get(System.getProperty("user.dir"), "config",
     // "workout_history.txt");
@@ -231,11 +235,28 @@ public class WorkoutScreen extends JFrame {
         JButton addSetButton = new JButton("+");
         addSetButton.setFont(new Font("Arial", Font.BOLD, 20));
         addSetButton.setForeground(Color.WHITE);
-        addSetButton.setBackground(primaryColor);
+        addSetButton.setBackground(DISABLED_COLOR);
         addSetButton.setPreferredSize(new Dimension(40, 40));
         addSetButton.setFocusPainted(false);
-        addSetButton.setBorder(new RoundedBorder(20, primaryColor));
+        addSetButton.setBorder(new RoundedBorder(20, DISABLED_COLOR));
+        addSetButton.setEnabled(false);
+        addSetButtons.add(addSetButton);
+    
+        addSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (addSetButton.isEnabled() && completedSets[0] < exercise.getSets()) {
+                    addSetButton.setBackground(primaryColor.darker());
+                }
+            }
+    
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (addSetButton.isEnabled() && completedSets[0] < exercise.getSets()) {
+                    addSetButton.setBackground(primaryColor);
+                }
+            }
+        });
 
+        // incrementing
         addSetButton.addActionListener(e -> {
             if (completedSets[0] < exercise.getSets()) {
                 completedSets[0]++;
@@ -255,30 +276,32 @@ public class WorkoutScreen extends JFrame {
             }
         });
 
-        // Add hover effect
-        addSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                if (addSetButton.isEnabled()) {
-                    addSetButton.setBackground(primaryColor.darker());
-                }
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                if (addSetButton.isEnabled()) {
-                    addSetButton.setBackground(primaryColor);
-                }
-            }
-        });
-
         // - button
         JButton minusSetButton = new JButton("-");
         minusSetButton.setFont(new Font("Arial", Font.BOLD, 20));
         minusSetButton.setForeground(Color.WHITE);
-        minusSetButton.setBackground(primaryColor);
+        minusSetButton.setBackground(DISABLED_COLOR);
         minusSetButton.setPreferredSize(new Dimension(40, 40));
         minusSetButton.setFocusPainted(false);
-        minusSetButton.setBorder(new RoundedBorder(20, primaryColor));
+        minusSetButton.setBorder(new RoundedBorder(20, DISABLED_COLOR));
+        minusSetButton.setEnabled(false);
+        minusSetButtons.add(minusSetButton);
+    
+        minusSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (minusSetButton.isEnabled() && completedSets[0] > 0) {
+                    minusSetButton.setBackground(primaryColor.darker());
+                }
+            }
+    
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (minusSetButton.isEnabled() && completedSets[0] > 0) {
+                    minusSetButton.setBackground(primaryColor);
+                }
+            }
+        });
 
+        // decrementing
         minusSetButton.addActionListener(e -> {
             if (completedSets[0] > 0) {
                 completedSets[0]--;
@@ -287,28 +310,26 @@ public class WorkoutScreen extends JFrame {
                 addSetButton.setBackground(PRIMARY_COLOR);
             }
         });
-
-        // Add hover effect
-        minusSetButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                if (minusSetButton.isEnabled()) {
-                    minusSetButton.setBackground(primaryColor.darker());
+        JPanel overlayPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                if (!workoutStarted) {
+                    Graphics2D g2d = (Graphics2D) g;
+                    g2d.setColor(new Color(255, 255, 255, 100));
+                    g2d.fillRect(0, 0, getWidth(), getHeight());
                 }
             }
+        };
+        overlayPanel.setOpaque(false);
 
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                if (minusSetButton.isEnabled()) {
-                    minusSetButton.setBackground(primaryColor);
-                }
-            }
-        });
 
         // Add components to controls panel
         controlsPanel.add(setsLabel);
         controlsPanel.add(addSetButton);
         controlsPanel.add(minusSetButton);
-
+        
         // Add panels to main panel
+        panel.add(overlayPanel, BorderLayout.CENTER);
         panel.add(infoPanel, BorderLayout.CENTER);
         panel.add(controlsPanel, BorderLayout.EAST);
 
@@ -317,8 +338,18 @@ public class WorkoutScreen extends JFrame {
 
     private void handleStartFinish() {
         if (startFinishButton.getText().equals("Start Workout")) {
+            workoutStarted = true;
             stopwatch.start();
             startFinishButton.setText("Finish Workout");
+            // Enable all set buttons
+            for (JButton button : addSetButtons) {
+                button.setEnabled(true);
+                button.setBackground(PRIMARY_COLOR);
+            }
+            for (JButton button : minusSetButtons) {
+                button.setEnabled(true);
+                button.setBackground(PRIMARY_COLOR);
+            }
         } else {
             stopwatch.stop();
             logWorkout();
