@@ -1,3 +1,0 @@
-ROUTINE_START||New Routine
-EXERCISE||test||12.00||1||1||0
-ROUTINE_END

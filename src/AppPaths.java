@@ -20,7 +20,7 @@ public class AppPaths {
     
     private AppPaths() {
          // Find the src directory regardless of working directory
-         baseDir = findSrcDirectory();
+         baseDir = findResourcesDirectory();
         
          // Set up paths relative to the src directory
          configDir = Paths.get(baseDir, "config").toString();
@@ -79,6 +79,29 @@ public class AppPaths {
             file.createNewFile();
         }
     }
+    private String findResourcesDirectory() {
+        // Start with the current working directory
+        Path currentPath = Paths.get("").toAbsolutePath();
+
+        // Look for /resources directory in the root of /fittrack
+        Path resourcesPath = currentPath.resolve("resources");
+        if (resourcesPath.toFile().exists()) {
+            return resourcesPath.toString();
+        }
+
+        // Traverse upward to find /fittrack and ensure /resources exists
+        Path parent = currentPath;
+        while (parent != null) {
+            resourcesPath = parent.resolve("resources");
+            if (resourcesPath.toFile().exists()) {
+                return resourcesPath.toString();
+            }
+            parent = parent.getParent();
+        }
+
+        throw new RuntimeException("Could not locate resources directory. Ensure /resources exists in the root of /fittrack.");
+    }
+
     private String findSrcDirectory() {
         // Start with the current working directory
         Path currentPath = Paths.get("").toAbsolutePath();
