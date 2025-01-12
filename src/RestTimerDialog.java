@@ -213,7 +213,7 @@ class RestTimerDialog extends JDialog {
     private void playCompletionSound() {
         try {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-                    getClass().getResource(AppPaths.getInstance().getBellSound()));
+                    new File(AppPaths.getInstance().getBellSound()));
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
             clip.start();

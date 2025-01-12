@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -383,7 +384,7 @@ public class WorkoutScreen extends JFrame {
     private void playSetCompletionSound() {
         try {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-                    getClass().getResource(AppPaths.getInstance().getBellSound()));
+                    new File(AppPaths.getInstance().getBellSound()));
             Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
             clip.start();
