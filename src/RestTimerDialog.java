@@ -156,6 +156,8 @@ class RestTimerDialog extends JDialog {
             // Using absolute file paths
             File playFile = new File(AppPaths.getInstance().getPlayImage());
             File pauseFile = new File(AppPaths.getInstance().getPauseImage());
+            System.out.println(playFile);
+            System.out.println(pauseFile);
 
             if (!playFile.exists() || !pauseFile.exists()) {
                 System.err.println("Could not find icon files. Using text fallback.");

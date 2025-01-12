@@ -215,7 +215,7 @@ public class HomeScreen extends BaseScreen {
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
         // Load and scale trash icon
-        ImageIcon originalIcon = new ImageIcon(getClass().getResource(AppPaths.getInstance().getTrashImage()));
+        ImageIcon originalIcon = new ImageIcon(AppPaths.getInstance().getTrashImage());
         Image scaledImage = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
