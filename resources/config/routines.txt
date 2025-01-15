@@ -1,3 +1,18 @@
-ROUTINE_START||Exercise
-EXERCISE||test2||12.00||12||12||0
+ROUTINE_START||Push Day
+EXERCISE||Push Ups||60.00||12||3||0
+EXERCISE||Shoulder Press||10.00||12||3||0
+EXERCISE||Chest Flys||25.00||12||3||0
+ROUTINE_END
+ROUTINE_START||Pull Day
+EXERCISE||Hammer Curls||10.00||12||3||0
+EXERCISE||Bicep Curls||10.00||12||3||0
+EXERCISE||Lateral Raises||10.00||12||3||0
+EXERCISE||Pull Ups||59.00||12||3||0
+EXERCISE||Barbell Rows||30.00||12||3||0
+ROUTINE_END
+ROUTINE_START||Legs/Abs
+EXERCISE||Squat||50.00||6||3||0
+EXERCISE||Rear Deadlifts||40.00||12||3||0
+EXERCISE||Calf Raises||25.00||12||3||0
+EXERCISE||Ab Crunches||30.00||12||3||0
 ROUTINE_END
